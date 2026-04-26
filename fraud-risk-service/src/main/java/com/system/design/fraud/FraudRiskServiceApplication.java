@@ -1,13 +1,13 @@
-package com.system.design.payment.service;
+package com.system.design.fraud;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PaymentServiceApplication {
+public class FraudRiskServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(PaymentServiceApplication.class, args);
+		SpringApplication.run(FraudRiskServiceApplication.class, args);
 	}
 
 }

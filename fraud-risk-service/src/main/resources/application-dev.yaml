@@ -1,0 +1,74 @@
+spring:
+  application:
+    name: fraud-risk-service
+  datasource:
+    url: jdbc:postgres://avnadmin:AVNS_fLbSDfpk7sgLdaZv8j-@stripe-payment-service-db-farmers-group.g.aivencloud.com:17667/defaultdb?sslmode=require
+    username: ${DB_USER:avnadmin}
+    password: ${DB_PASS:<redacted>}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: public
+server:
+  port: 8082
+logging:
+  level:
+    com.example.fraud: DEBUG
+geo:
+  ip:
+    city-db-path: classpath:geo/GeoLite2-City.mmdb
+    asn-db-path: classpath:geo/GeoLite2-ASN.mmdb
+    country-db-path: classpath:geo/GeoLite2-Country.mmdb
+    cache-size: 4096        # in-memory LRU cache entries
+    # Risk thresholds
+    risk:
+      vpn-score: 40
+      tor-score: 60
+      proxy-score: 35
+      datacenter-score: 20
+      country-mismatch-score: 20
+      high-risk-countries: # ISO-3166-1 alpha-2
+        - KP   # North Korea
+        - IR   # Iran
+        - CU   # Cuba
+        - SY   # Syria
+        - RU   # Russia (optional — adjust per policy)
+      high-risk-country-score: 30
+sift:
+  api-key: ${SIFT_API_KEY}          # injected from k8s secret
+  score-api-url: https://api.sift.com/v205/score
+  events-api-url: https://api.sift.com/v205/events
+  timeout-ms: 2000                      # 2s max — never block payment longer
+  thresholds:
+    decline: 80                        # score >= 80 → DECLINE
+    review: 60                        # score >= 60 → REVIEW
+  enabled: true                      # feature flag — false to bypass Sift
+  min-amount: 10000                     # only call Sift if amount >= $100 (in cents)
+velocity:
+  thresholds:
+    customer:
+      max-txn-count-1h: 5
+      max-txn-count-24h: 20
+      max-amount-1h: 2000.00
+      max-amount-24h: 10000.00
+    ip:
+      max-txn-count-1h: 10
+      max-txn-count-24h: 30
+    device:
+      max-txn-count-24h: 15
+      max-distinct-customers-24h: 3     # account takeover signal
+    card-testing:
+      max-txn-count-merchant-1h: 3      # same customer, same merchant
+  scores:
+    customer-count-1h: 25
+    customer-count-24h: 15
+    customer-amount-1h: 20
+    customer-amount-24h: 15
+    ip-count-1h: 20
+    ip-count-24h: 10
+    device-count-24h: 25
+    device-multi-customer: 35          # highest — strong ATO signal
+    card-testing: 30
