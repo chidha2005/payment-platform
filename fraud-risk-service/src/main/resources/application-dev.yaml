@@ -3,8 +3,8 @@ spring:
     name: fraud-risk-service
   datasource:
     url: jdbc:postgres://avnadmin:AVNS_fLbSDfpk7sgLdaZv8j-@stripe-payment-service-db-farmers-group.g.aivencloud.com:17667/defaultdb?sslmode=require
-    username: ${DB_USER:avnadmin}
-    password: ${DB_PASS:<redacted>}
+    username: ${DB_USER}
+    password: ${DB_PASS}
   jpa:
     hibernate:
       ddl-auto: validate
